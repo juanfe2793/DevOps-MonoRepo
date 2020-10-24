@@ -1,0 +1,38 @@
+{
+    "builders": [{
+        "ami_description": "An AMI with devops app base, based on amazon linux.",
+        "ami_name": "devops-app-jgomez {{timestamp}}",
+        "instance_type": "t2.micro",
+        "region": "{{user `region`}}",
+        "source_ami_filter": {
+            "filters": {
+                "architecture": "x86_64",
+                "block-device-mapping.volume-type": "gp2",
+                "name": "amzn2-ami-hvm-2.0*",
+                "root-device-type": "ebs",
+                "virtualization-type": "hvm"
+            },
+            "most_recent": true,
+            "owners": [
+                "amazon"
+            ]
+        },
+        "ssh_username": "ec2-user",
+        "type": "amazon-ebs"
+    }],
+    "provisioners": [{
+            "inline": [
+                "echo 'Sleeping for 20 seconds to give Amazon Linux enough time to initialize (otherwise, packages may fail to install).'",
+                "sleep 20",
+                "sudo yum update -y"
+            ],
+            "type": "shell"
+        },
+        {
+            "scripts": [
+                "{{template_dir}}/install-tools.sh"
+            ],
+            "type": "shell"
+        }
+    ]
+}
